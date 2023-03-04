@@ -11,7 +11,8 @@ public class WhatsappRepository {
     //You can use the below mentioned hashmaps or delete these and create your own.
     private HashMap<Group, List<User>> groupUserMap;
     private HashMap<Group, List<Message>> groupMessageMap;
-    private HashMap<Message, User> senderMap;
+    //private HashMap<Message, User> senderMap;
+    private HashMap<User, Message> senderMap;
     private HashMap<Group, User> adminMap;
     private HashSet<String> userMobile;
     private int customGroupCount;
@@ -20,7 +21,8 @@ public class WhatsappRepository {
     public WhatsappRepository(){
         this.groupMessageMap = new HashMap<Group, List<Message>>();
         this.groupUserMap = new HashMap<Group, List<User>>();
-        this.senderMap = new HashMap<Message, User>();
+        //this.senderMap = new HashMap<Message, User>();
+        this.senderMap = new HashMap<User, Message>();
         this.adminMap = new HashMap<Group, User>();
         this.userMobile = new HashSet<>();
         this.customGroupCount = 0;
@@ -102,9 +104,7 @@ public class WhatsappRepository {
     }
 
     public int removeUser(User user) throws Exception {
-        boolean flag = false;
-
-
+//        boolean flag = false;
 //        for(List<User> list : groupUserMap.values()){
 //            for(User user1 : list){
 //                if(user1.equals(user)){
@@ -119,6 +119,8 @@ public class WhatsappRepository {
 //        }
 
 
+        boolean flag = false;
+        Group grp;
         for(Group group : groupUserMap.keySet()){
             for(User user1 : groupUserMap.get(group)){
                 if(user1.equals(user)){
@@ -127,8 +129,13 @@ public class WhatsappRepository {
                         break;
                     }
                     flag = true;
+                    grp = group;
                     List<User> list = groupUserMap.get(group);
-                    Message msg = senderMap.getKey(user);
+                    Message msg = senderMap.get(user);
+                    List<Message> list1 = groupMessageMap.get(group);
+                    list1.remove(msg.getId());
+                    senderMap.put(user,null);
+
                     list.remove(user);
                 }
             }
@@ -136,8 +143,9 @@ public class WhatsappRepository {
         if(flag == false){
             throw new Exception("User not found");
         }
+        return groupUserMap.get(grp).size()+ groupMessageMap.get(grp).size()+
+    }
 
-
-
+    public String findMessage(Date start, Date end, int k) {
     }
 }
